@@ -15,7 +15,7 @@ reviews = reader.readReviewFromJson(review_path)
 #reviews = reader.readReviews(review_path, encoding='cp949')
 books = reader.readBooks(book_path)
 
-print("Check readers")
+#print("Check readers")
 
 # Reviews : [ ['title', ['key', 'words', .....] ] ...... ] -> keywords are in sentence form, not a word
 # Books   : [ ['title', ['key', 'words', .....] ...... ] ] -> keywords are in sentence form, not a word
@@ -25,8 +25,8 @@ print("Check readers")
 
 
 
-#matcher = Matcher()
-#matcher.getBooks()
-#matcher.match(reviews, books)
+matcher = Matcher()
+matcher.getBooks()
+matcher.match(reviews, books)
 
 
