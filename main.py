@@ -56,6 +56,6 @@ while True:
 
         elif user_input == '5':
             matcher.print_all_keywords()
+
     except Exception as e:
         traceback.print_exc()
-
