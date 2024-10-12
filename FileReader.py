@@ -6,11 +6,13 @@ class Filereader:
     def __init__(self):
         self.status = 0
 
-    def readReviews(self, csvpath: str, encoding='utf-8') -> list:
+    def readReviews(self, csvpath: str, encoding='utf-8', skip=1) -> list:
         reviews = []
         with open(csvpath, mode='r', encoding=encoding) as file:
             reader = csv.reader(file)
-            next(reader)
+
+            for _ in range(skip):
+                next(reader)
 
             for row in reader:
                 reviews.append(row)

@@ -19,20 +19,28 @@ class Extractor:
         with open(self.stopwords_path, 'r', encoding='utf-8') as file:
             self.stopwords = [line.strip() for line in file.readlines()]
 
-        # File reader
-        self.csvpath = 'data/Review_good.csv'
         # csvpath = 'data/Reviews.csv'
         self.filereader = Filereader()
-        self.review = self.filereader.readReviews(self.csvpath, 'cp949')
+        self.review = []
+        #self.review = self.filereader.readReviews(self.csvpath, 'cp949')
 
         # Extractor
         # self.extractor = KeyBERT()
         self.extractor = KeyBERT(self.model)
 
-    def extract_keywords_json(self):
+    def _read_review(self, review_path: str, encoding='cp949'):
+        self.review = self.filereader.readReviews(review_path, encoding=encoding)
+
+    def extract_keywords_json(self, review_path='data/Review_good.csv', encoding='cp949'):
+        self._read_review(review_path=review_path, encoding=encoding)
+        #print(self.review)
         keys = {}
         start_time = time.time()
+
         for item in self.review:
+            if len(item) < 2:
+                continue
+
             title = item[0]
             text = item[1]
 
@@ -55,7 +63,7 @@ class Extractor:
         execution_time = end_time - start_time
         print(f"실행 시간: {execution_time:.6f} 초")
 
-        with open('data.json', 'w', encoding='utf-8') as json_file:
+        with open('results/data.json', 'w', encoding='utf-8') as json_file:
             json.dump(keys, json_file, ensure_ascii=False, indent=4)
 
 
