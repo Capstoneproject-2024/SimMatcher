@@ -4,13 +4,8 @@ from SimilarityMatcher import *
 import traceback
 import json
 
-
-
-
 #extractor = Extractor()
 #extractor.extract_keywords_json(review_path='data/Review_book.csv')
-
-
 
 """
 

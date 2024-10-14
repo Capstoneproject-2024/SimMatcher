@@ -152,7 +152,7 @@ class Matcher:
                 book_similarity.append([title, similarity])
 
             book_similarity.sort(key=lambda x: x[1], reverse=True)
-            print(book_similarity[:5])
+            print(book_similarity[:4] + book_similarity[-3:])
             review_num = int(input('\nEnter review number: '))
 
     def match_book2review(self, reviews, books):
