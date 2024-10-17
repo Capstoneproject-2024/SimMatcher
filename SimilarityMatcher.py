@@ -38,7 +38,6 @@ class Matcher:
         print("Keywords set")
         #self.print_all_keywords()
 
-
     def _add_keyword(self, title: str, keywords: list, key_type: int):
         if title not in self.keywords:
             self.keywords[title] = {Keytype.INFO.name: [], Keytype.REVIEW.name: []}
@@ -48,7 +47,6 @@ class Matcher:
 
         elif key_type == Keytype.INFO:
             self.keywords[title][Keytype.INFO.name] = keywords
-
 
     def _s2v_mean(self, sentence: str, voo='similar'):
         """
@@ -70,6 +68,13 @@ class Matcher:
                     print(f'{word} not in model -> changed into {similar_word}')
         return np.mean(word_vec, axis=0)
 
+    def _s2v_single(self, word: str):
+        if word in self.model:
+            return self.model[word]
+        else:
+            sim_word = self.model.most_similar(word, topn=1)[0][0]
+            return self.model[sim_word]
+
     def _cosine_similarity(self, vec1, vec2):
         dot_product = np.dot(vec1, vec2)
         norm_a = np.linalg.norm(vec1)
@@ -80,6 +85,12 @@ class Matcher:
         vec1 = self._s2v_mean(sen1)
         vec2 = self._s2v_mean(sen2)
         return self._cosine_similarity(vec1, vec2)
+
+    def test_similarity(self, word1: str, word2: str):
+        word1_vec = self._s2v_single(word1)
+        word2_vec = self._s2v_single(word2)
+        print(f"Word1: '{word1}', Word2: '{word2}', similarity: '{self._cosine_similarity(word1_vec, word2_vec)}'")
+
 
     def getBooks(self, book_path='BookInfo.txt'):
         """
