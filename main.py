@@ -26,7 +26,11 @@ books = reader.readBooks(book_path)
 """
 
 print("Program Start")
-matcher = Matcher()
+
+using_matcher = input("Will you use matcher and extractor? (Y to use) >>")
+if using_matcher == 'y':
+    matcher = Matcher()
+
 print("Matcher ready")
 
 while True:

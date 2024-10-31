@@ -14,6 +14,8 @@ class Extractor:
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name, trust_remote_code=True)
         self.model = AutoModel.from_pretrained(self.model_name, trust_remote_code=True)
 
+        self.range_parameter_tuple = (2, 4)     # Number of extracted keyword's word
+
         # Stop words
         self.stopwords_path = stopwords_path
         with open(self.stopwords_path, 'r', encoding='utf-8') as file:
@@ -31,6 +33,19 @@ class Extractor:
     def _read_review(self, review_path: str, encoding='cp949'):
         self.review = self.filereader.readReviews(review_path, encoding=encoding)
 
+    def extract_keyword_string(self, review: str) -> list:
+
+        keywords = self.extractor.extract_keywords(
+            review,
+            keyphrase_ngram_range=self.range_parameter_tuple,
+            use_maxsum=True,
+            # use_mmr=True,
+            # stop_words=stopwords,
+            top_n=5,
+        )
+
+        return keywords
+
     def extract_keywords_json(self, review_path='data/Review_good.csv', encoding='cp949'):
         self._read_review(review_path=review_path, encoding=encoding)
         #print(self.review)
@@ -44,14 +59,7 @@ class Extractor:
             title = item[0]
             text = item[1]
 
-            keywords = self.extractor.extract_keywords(
-                text,
-                keyphrase_ngram_range=(2, 4),
-                use_maxsum=True,
-                # use_mmr=True,
-                # stop_words=stopwords,
-                top_n=5,
-            )
+            keywords = self.extract_keyword_string(text)
 
             if title not in keys:
                 keys[title] = [keywords]

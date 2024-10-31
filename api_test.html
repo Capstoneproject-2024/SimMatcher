@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test</h1>
+
+    <!-- Submit 기능 테스트 -->
+    <h2>Submit Message</h2>
+    <form id="submitForm">
+        <label for="submitInput">Enter a message:</label>
+        <input type="text" id="submitInput" name="submitMessage">
+        <button type="button" onclick="sendSubmitMessage()">Send Submit</button>
+    </form>
+
+    <!-- Extract 기능 테스트 -->
+    <h2>Extract Keywords</h2>
+    <form id="extractForm">
+        <label for="extractInput">Enter a review:</label>
+        <input type="text" id="extractInput" name="extractReview">
+        <button type="button" onclick="sendExtractReview_post()">Send Extract</button>
+    </form>
+
+    <script>
+        // Submit 기능 요청 함수
+        async function sendSubmitMessage() {
+            const message = document.getElementById("submitInput").value;
+
+            const response = await fetch("http://127.0.0.1:8000/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message: message })
+            });
+
+            const result = await response.json();
+            console.log("Submit response:", result.message);
+            alert("Submit response: " + result.message);
+        }
+
+        //Extract 기능을 post로 구현함
+        async function sendExtractReview_post(){
+            const message = document.getElementById("extractInput").value;
+
+            const response = await fetch("http://127.0.0.1:8000/extractp", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ review: message })
+            });
+
+            const result = await response.json();
+            console.log("Submit response:", result.keywords);
+            alert("Submit response: " + result.keywords);
+        }
+
+        // Extract 기능 요청 함수 (GET 요청으로 변경)
+        async function sendExtractReview() {
+            const review = document.getElementById("extractInput").value;
+
+            // GET 요청에 쿼리 파라미터로 데이터 추가
+            const response = await fetch(`http://127.0.0.1:8000/extract?review=${encodeURIComponent(review)}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const result = await response.json();
+            console.log("Extract response:", result.keywords);
+            alert("Extracted Keywords: " + result.keywords);  // 알림창으로 표시
+        }
+    </script>
+</body>
+</html>
