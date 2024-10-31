@@ -46,7 +46,7 @@
         async function sendExtractReview_post(){
             const message = document.getElementById("extractInput").value;
 
-            const response = await fetch("http://127.0.0.1:8000/extractp", {
+            const response = await fetch("http://127.0.0.1:8000/extract", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -64,7 +64,7 @@
             const review = document.getElementById("extractInput").value;
 
             // GET 요청에 쿼리 파라미터로 데이터 추가
-            const response = await fetch(`http://127.0.0.1:8000/extract?review=${encodeURIComponent(review)}`, {
+            const response = await fetch(`http://127.0.0.1:8000/extractg?review=${encodeURIComponent(review)}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"

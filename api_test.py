@@ -26,7 +26,7 @@ async def submit_message(request: Request):
     print("Received message:", message)  # 콘솔에 메시지 출력
     return {"message": f"Received: {message}"}
 
-@app.post("/extractp")
+@app.post("/extract")
 async def extract_keyword(request: Request):
     data = await request.json()
     review = data.get("review")
@@ -36,7 +36,7 @@ async def extract_keyword(request: Request):
     return {"keywords": keywords}
 # 처음에는 Get을 고려했으나 Post가 더 나아보임 (리뷰는 길기 때문에)
 
-@app.get("/extract")
+@app.get("/extractg")
 async def extract_keyword(review: str):
     #keywords = review.split(' ')
     keywords = extractor.extract_keyword_string(review)
