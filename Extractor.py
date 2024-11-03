@@ -33,8 +33,9 @@ class Extractor:
     def _read_review(self, review_path: str, encoding='cp949'):
         self.review = self.filereader.readReviews(review_path, encoding=encoding)
 
-    def extract_keyword_string(self, review: str) -> list:
+    def extract_keyword_string(self, review: str, show_similarity=True) -> list:
 
+        temp = []
         keywords = self.extractor.extract_keywords(
             review,
             keyphrase_ngram_range=self.range_parameter_tuple,
@@ -43,6 +44,12 @@ class Extractor:
             # stop_words=stopwords,
             top_n=5,
         )
+        # [ (title, similarity) ... ]
+
+        if not show_similarity:
+            for keyword in keywords:
+                temp.append(keyword[0])
+            keywords = temp
 
         return keywords
 

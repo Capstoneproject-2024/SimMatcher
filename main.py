@@ -46,8 +46,8 @@ while True:
         if user_input == '0':
             exit(0)
 
-        elif user_input == '1':
-            matcher.match_both()
+        elif user_input == '1' and matcher is not None:
+            matcher.match_both_test()
 
         elif user_input == '2':
             proportion = input("Type proportion of review (Review keyword : book keyword, 0~100)")

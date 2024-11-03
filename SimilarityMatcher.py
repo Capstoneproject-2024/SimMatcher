@@ -12,7 +12,7 @@ class Matcher:
         self.reader = Filereader()
         self.review_proportion = 0.5    # Proportion of Review
 
-        self.keywords = {} # {book_title: {info: [], review: []}}
+        self.keywords = {} # {book_title: {info: [], review: []}} Caching the keywords for testing
 
         self.set_keywords()
         print("Made model of sim_matcher")
@@ -26,6 +26,13 @@ class Matcher:
         print("------------------------------------------------------------")
 
     def set_keywords(self, book_keyword_path='BookInfo.txt', review_keyword_path='data.json'):
+        """
+        Load keywords from review and book information files.
+        Only for testing level. It should be replaced with DB API.
+        :param book_keyword_path:
+        :param review_keyword_path:
+        :return:
+        """
         self.getBooks(book_path=book_keyword_path)
         self.getReviews(review_path=review_keyword_path)
 
@@ -91,7 +98,6 @@ class Matcher:
         word2_vec = self._s2v_single(word2)
         print(f"Word1: '{word1}', Word2: '{word2}', similarity: '{self._cosine_similarity(word1_vec, word2_vec)}'")
 
-
     def getBooks(self, book_path='BookInfo.txt'):
         """
         Read book information from publishers
@@ -116,7 +122,56 @@ class Matcher:
         else:
             print("WARNING: Proportion should be in 0~100")
 
-    def match_both(self):
+    def match_both(self, title: str, keywords: list, recommend_number=3):
+        """
+        :param title: simple string of title
+        :param keywords: [keyword1, keyword2, ... ]
+        :return:
+        """
+        r_proportion = self.review_proportion
+        i_proportion = 1 - self.review_proportion
+        book_similarity = []
+        for title, keywords in self.keywords.items():
+            info_keywords = keywords[Keytype.INFO.name]
+            review_keywords = keywords[Keytype.REVIEW.name]
+            sims_info = []
+            sims_review = []
+
+            # Calculate similarity: with book information
+            for info_keyword in info_keywords:
+                for keyword in keywords:
+                    sims_info.append(self.sentence_similarity(keyword, info_keyword))
+
+            # Calculate similarity: with reviews
+            for review_keyword in review_keywords:
+                for keyword in keywords:
+                    sims_review.append(self.sentence_similarity(keyword, review_keyword))
+
+            similarity = 0
+
+            # Calculate average similarity for each book
+            if len(sims_info) != 0 and len(sims_review) != 0:
+                info_sim_avg = sum(sims_info) / len(sims_info)
+                review_sim_avg = sum(sims_review) / len(sims_review)
+                similarity = (r_proportion * review_sim_avg) + (i_proportion * info_sim_avg)
+
+            # When there is no review/info
+            else:
+                if len(sims_info) != 0:
+                    similarity = sum(sims_info) / len(sims_info)
+                elif len(sims_review) != 0:
+                    similarity = sum(sims_review) / len(sims_review)
+
+            book_similarity.append([title, similarity])
+
+        book_similarity.sort(key=lambda x: x[1], reverse=True)
+        titles = [item[0] for item in book_similarity]
+        print(f"titles: {titles}\nbooks: {book_similarity}")
+        book_recommend = titles[:recommend_number]
+        return book_recommend
+
+
+    def match_both_test(self):
         r_proportion = self.review_proportion
         i_proportion = 1 - self.review_proportion
 
@@ -139,21 +194,25 @@ class Matcher:
                 sims_info = []
                 sims_review = []
 
+                # Calculate similarity: with book information
                 for keyword in info_keywords:
                     for review in review_sample[1]:
                         sims_info.append(self.sentence_similarity(review, keyword))
 
+                # Calculate similarity: with reviews
                 for keyword in review_keywords:
                     for review in review_sample[1]:
                         sims_review.append(self.sentence_similarity(review, keyword))
 
                 similarity = 0
 
+                # Calculate average similarity for each book
                 if len(sims_info) != 0 and len(sims_review) != 0:
                     info_sim_avg = sum(sims_info) / len(sims_info)
                     review_sim_avg = sum(sims_review) / len(sims_review)
                     similarity = (r_proportion * review_sim_avg) + (i_proportion * info_sim_avg)
 
+                # When there is no review/info
                 else:
                     if len(sims_info) != 0:
                         similarity = sum(sims_info) / len(sims_info)

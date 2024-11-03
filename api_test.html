@@ -24,6 +24,17 @@
         <button type="button" onclick="sendExtractReview_post()">Send Extract</button>
     </form>
 
+    <!-- Match 기능 테스트 -->
+    <h2>Match Keywords from Review</h2>
+    <form id="matchForm">
+        <label for="matchTitle">Enter a Title:</label>
+        <input type="text" id="matchTitle" name="extractReview">
+        <label for="matchReview">Enter a Review:</label>
+        <input type="text" id="matchReview" name="extractReview">
+        <button type="button" onclick="sendMatchTitleReview()">Send Match</button>
+    </form>
+
+
     <script>
         // Submit 기능 요청 함수
         async function sendSubmitMessage() {
@@ -59,22 +70,27 @@
             alert("Submit response: " + result.keywords);
         }
 
-        // Extract 기능 요청 함수 (GET 요청으로 변경)
-        async function sendExtractReview() {
-            const review = document.getElementById("extractInput").value;
+        //Match 기능 구현 Post
+        async function sendMatchTitleReview(){
+                const title = document.getElementById("matchTitle").value;
+                const review = document.getElementById("matchReview").value;
 
-            // GET 요청에 쿼리 파라미터로 데이터 추가
-            const response = await fetch(`http://127.0.0.1:8000/extractg?review=${encodeURIComponent(review)}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
+                // Title과 Review를 JSON 형식으로 서버에 전송
+                const response = await fetch("http://127.0.0.1:8000/match", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ title: title, review: review })
+                });
 
-            const result = await response.json();
-            console.log("Extract response:", result.keywords);
-            alert("Extracted Keywords: " + result.keywords);  // 알림창으로 표시
+                // 서버로부터 JSON 응답을 받아서 처리
+                const result = await response.json();
+                console.log("Matched books:", result.recommend);
+                alert("Matched books: " + result.recommend);
         }
+
+
     </script>
 </body>
 </html>
