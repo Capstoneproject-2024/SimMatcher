@@ -1,11 +1,11 @@
+from numpy.lib.function_base import extract
+
 from Extractor import *
 from FileReader import *
 from SimilarityMatcher import *
 import traceback
 import json
 
-#extractor = Extractor()
-#extractor.extract_keywords_json(review_path='data/Review_book.csv')
 
 """
 
@@ -32,8 +32,10 @@ if using_matcher == 'y':
     matcher = Matcher()
 else:
     matcher = Matcher(use_model=False)
-
 print("Matcher ready")
+
+extractor = Extractor()
+#extractor.extract_keywords_json(review_path='data/Review_book.csv')
 
 while True:
     print("0: Exit\n"
@@ -41,7 +43,9 @@ while True:
           "2: Set Review Proportion (0~100)\n"
           "3: Change file\n"
           "4: Extractor\n"
-          "5: Print all keywords")
+          "5: Print all keywords\n"
+          "6: Extract and save as csv"
+          )
     user_input = input("choose>>")
 
     try:
@@ -58,6 +62,9 @@ while True:
         elif user_input == '5':
             matcher.print_all_keywords()
             matcher.print_all_keywords_json()
+
+        elif user_input == '6':
+            extractor.save_keywords_csv()
 
     except Exception as e:
         traceback.print_exc()
