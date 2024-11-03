@@ -2,6 +2,7 @@ from gensim.models import fasttext
 import numpy as np
 from FileReader import *
 from enum import IntEnum
+from datetime import datetime
 
 class Matcher:
     def __init__(self, modelpath='models/cc.ko.300.bin.gz', use_model=True):
@@ -24,6 +25,12 @@ class Matcher:
                   f'Info Keywords  : {keywords[Keytype.INFO.name]}\n'
                   f'Review Keywords: {keywords[Keytype.REVIEW.name]}\n')
         print("------------------------------------------------------------")
+
+    def print_all_keywords_json(self):
+        current_time = datetime.now().strftime("%y%m%d%H%M")
+        file_name = "results/keywords_" + current_time + ".json"
+        with open(file_name, mode="w", encoding="utf-8") as file:
+            json.dump(self.keywords, file, ensure_ascii=False, indent=4)
 
     def set_keywords(self, book_keyword_path='BookInfo.txt', review_keyword_path='data.json'):
         """

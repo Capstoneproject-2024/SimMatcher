@@ -30,6 +30,8 @@ print("Program Start")
 using_matcher = input("Will you use matcher and extractor? (Y to use) >>")
 if using_matcher == 'y':
     matcher = Matcher()
+else:
+    matcher = Matcher(use_model=False)
 
 print("Matcher ready")
 
@@ -55,6 +57,7 @@ while True:
 
         elif user_input == '5':
             matcher.print_all_keywords()
+            matcher.print_all_keywords_json()
 
     except Exception as e:
         traceback.print_exc()
