@@ -41,7 +41,7 @@ class Matcher:
         :return:
         """
         self.getBooks(book_path=book_keyword_path)
-        self.getReviews(review_path=review_keyword_path)
+        self.getReviews_json(review_path=review_keyword_path)
 
         for book in self.books:
             self._add_keyword(book[0].lower(), book[1], Keytype.INFO)
@@ -114,7 +114,7 @@ class Matcher:
         """
         self.books = self.reader.readBooks(book_path)
 
-    def getReviews(self, review_path='data.json'):
+    def getReviews_json(self, review_path='data.json'):
         """
         Read reviews from json file
         [ ['title', ['key', 'words', .....] ]...... ]
@@ -122,6 +122,9 @@ class Matcher:
         :return:
         """
         self.reviews = self.reader.readReviewFromJson(review_path)
+
+    def getReviews_csv(self, review_path='results/POS_before_extraction_stopwords.csv'):
+        self.reviews = self.reader.readReviewFromCSV(review_path)
 
     def set_proportion(self, review_proportion: int):
         if 0 <= review_proportion <= 100:
@@ -176,7 +179,6 @@ class Matcher:
         print(f"titles: {titles}\nbooks: {book_similarity}")
         book_recommend = titles[:recommend_number]
         return book_recommend
-
 
     def match_both_test(self):
         r_proportion = self.review_proportion
@@ -261,7 +263,6 @@ class Matcher:
 
     def match_review2review(self):
         pass
-
 
 class Keytype(IntEnum):
     INFO = 0

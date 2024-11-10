@@ -30,11 +30,12 @@ print("Program Start")
 using_matcher = input("Will you use matcher and extractor? (Y to use) >>")
 if using_matcher == 'y':
     matcher = Matcher()
+    print("Matcher ready")
 else:
     matcher = Matcher(use_model=False)
-print("Matcher ready")
 
 extractor = Extractor()
+print("Extractor ready")
 #extractor.extract_keywords_json(review_path='data/Review_book.csv')
 
 while True:
@@ -44,7 +45,8 @@ while True:
           "3: Change file\n"
           "4: Extractor\n"
           "5: Print all keywords\n"
-          "6: Extract and save as csv"
+          "6: Extract and save as csv\n"
+          "7: Extract, then apply POS extraction, and save as csv"
           )
     user_input = input("choose>>")
 
@@ -59,12 +61,18 @@ while True:
             proportion = input("Type proportion of review (Review keyword : book keyword, 0~100)")
             matcher.set_proportion(int(proportion))
 
+        elif user_input == '4':
+            print("Testing novel brand new keyword extracting LMFOOOOOO")
+
         elif user_input == '5':
             matcher.print_all_keywords()
-            matcher.print_all_keywords_json()
+            #matcher.print_all_keywords_json()
 
         elif user_input == '6':
-            extractor.save_keywords_csv()
+            extractor.save_keywords_csv(pos=True)
+
+        elif user_input == '7':
+            extractor.save_keywords_pos_csv()
 
     except Exception as e:
         traceback.print_exc()

@@ -34,6 +34,10 @@ class Filereader:
                 books.append([title, reviews])
         return books
 
+    def readReviewFromCSV(self, csvpath: str, encoding='utf-8'):
+        revew_processed = []
+
+
     def readReviewFromJson(self, jsonpath: str, encoding='utf-8') -> list:
         reviews_processed = []
         with open(jsonpath, 'r', encoding=encoding) as file:
