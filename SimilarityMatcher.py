@@ -41,7 +41,9 @@ class Matcher:
         :return:
         """
         self.getBooks(book_path=book_keyword_path)
-        self.getReviews_json(review_path=review_keyword_path)
+        #self.getReviews_json(review_path=review_keyword_path)
+        self.getReviews_csv()
+
 
         for book in self.books:
             self._add_keyword(book[0].lower(), book[1], Keytype.INFO)
