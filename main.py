@@ -40,7 +40,7 @@ while True:
     print("0: Exit\n"
           "1: Match\n"
           "2: Set Review Proportion (0~100)\n"
-          "3: Change file (x)\n"
+          "3: Matcher\n"
           "4: Extractor (x)\n"
           "5: Print all keywords\n"
           "6: Extract and save as csv\n"
@@ -60,6 +60,35 @@ while True:
         elif user_input == '2':
             proportion = input("Type proportion of review (Review keyword : book keyword, 0~100)")
             matcher.set_proportion(int(proportion))
+
+        elif user_input == '3':
+            print("test matcher, and save")
+            book_key_path = input("Type book keyword path ( 'Y' to use default ) >>")
+            review_key_path = input("Type book Keyword path ( 'Y' to use default ) >>")
+            test_key_path = input("Type TEST keyword path ( 'Y' to use default ) >>")
+
+            review_file = Path(review_key_path)
+            book_file = Path(review_key_path)
+            test_file = Path(test_key_path)
+            accept = ['y', 'Y']
+
+            if book_key_path in accept or not book_file.is_file():
+                book_key_path = 'BookInfo.txt'
+
+            if review_key_path in accept or not review_file.is_file():
+                review_key_path = 'data/keywords/review_keyword_basic.csv'
+
+            if test_key_path in accept or not test_file.is_file():
+                test_key_path = 'data/keywords/review_keyword_basic.csv'
+
+            print(f'Book keyword path: "{book_key_path}"\n'
+                  f'Review keyword path: "{review_key_path}"\n'
+                  f'Compare and test with: "{test_key_path}"\n')
+
+            matcher.set_keywords(book_keyword_path=book_key_path, review_keyword_path=review_key_path)
+            matcher.test_and_save_as_csv(test_key_path)
+
+
 
         elif user_input == '4':
             print("Testing novel brand new keyword extracting LMFOOOOOO (but not yet)")

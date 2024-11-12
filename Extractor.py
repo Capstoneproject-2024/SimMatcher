@@ -21,6 +21,7 @@ class Extractor:
         self.model = AutoModel.from_pretrained(self.model_name, trust_remote_code=True)
 
         self.range_parameter_tuple = (2, 4)     # Number of extracted keyword's word
+        self.time_format = "%y%m%d-%H%M%S"
 
         # Stop words
         self.stopwords_path = stopwords_path
@@ -123,7 +124,7 @@ class Extractor:
     def save_keywords_json(self, review_path='data/Review_good.csv', encoding='cp949'):
         keys = self.extract_keywords(review_path, encoding)
 
-        current_time = datetime.now().strftime("%y%m%d-%H%M")
+        current_time = datetime.now().strftime(self.time_format)
         file_name = 'results/review_keyword_' + current_time + ".json"
         with open(file_name, 'w', encoding='utf-8') as file:
             json.dump(keys, file, ensure_ascii=False, indent=4)
@@ -131,7 +132,7 @@ class Extractor:
     def save_keywords_csv(self, review_path='data/Review_book.csv', encoding='cp949', show_similarity=False, pos=False):
         keys = self.extract_keywords(review_path=review_path, encoding=encoding, show_similarity=show_similarity, pos=pos)
 
-        current_time = datetime.now().strftime("%y%m%d-%H%M")
+        current_time = datetime.now().strftime(self.time_format)
         file_name = 'results/review_keyword_' + current_time + ".csv"
 
         rows = []
@@ -154,7 +155,7 @@ class Extractor:
         """
         keys = self.extract_keywords(review_path=review_path, encoding=encoding, show_similarity=show_similarity)
 
-        current_time = datetime.now().strftime("%y%m%d-%H%M")
+        current_time = datetime.now().strftime(self.time_format)
         file_name = 'results/review_keyword_' + current_time + ".csv"
 
         rows = []

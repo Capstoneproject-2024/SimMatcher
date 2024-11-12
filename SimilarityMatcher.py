@@ -12,6 +12,7 @@ class Matcher:
             self.model = fasttext.load_facebook_vectors('models/cc.ko.300.bin.gz')
         self.reader = Filereader()
         self.review_proportion = 0.5    # Proportion of Review
+        self.time_format = "%y%m%d-%H%M%S"
 
         self.keywords = {}              # {book_title: {info: [], review: []}} Caching the keywords for testing
 
@@ -31,7 +32,7 @@ class Matcher:
         Save current info keyword and review keyword in json format
         :return: None
         """
-        current_time = datetime.now().strftime("%y%m%d-%H%M")
+        current_time = datetime.now().strftime(self.time_format)
         file_name = "results/keywords_" + current_time + ".json"
         with open(file_name, mode="w", encoding="utf-8") as file:
             json.dump(self.keywords, file, ensure_ascii=False, indent=4)
@@ -338,7 +339,7 @@ class Matcher:
         columns = ['title'] + [f'keyword{i}' for i in range(1, 6)] + [f'book{j}' for j in range(1, 6)]
         processed_data = []
 
-        current_time = datetime.now().strftime("%y%m%d-%H%M")
+        current_time = datetime.now().strftime(self.time_format)
         saved_file_name = f'results/match_test_{current_time}.csv'
         saved_current_keywords_name = f'results/match_test_{current_time}_keywords.csv'
 
