@@ -1,6 +1,7 @@
 import csv
 import re
 import json
+import pandas as pd
 
 class Filereader:
     def __init__(self):
@@ -33,6 +34,17 @@ class Filereader:
 
                 books.append([title, reviews])
         return books
+
+    def readReviewFromCSV(self, csvpath: str, encoding='utf-8'):
+        reviews_processed = []
+        dataframe = pd.read_csv(csvpath, encoding=encoding)
+
+        for _, row in dataframe.iterrows():
+            book = row['title']
+            keyword_list = [row[f'keyword{i}'] for i in range(1, 6) if pd.notnull(row[f'keyword{i}'])]
+            reviews_processed.append([book, keyword_list])
+
+        return reviews_processed
 
     def readReviewFromJson(self, jsonpath: str, encoding='utf-8') -> list:
         reviews_processed = []

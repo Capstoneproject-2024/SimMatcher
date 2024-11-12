@@ -1,8 +1,12 @@
 gensim==4.3.3
 keybert==0.8.5
 numpy==1.26.4
-fastapi
+fastapi~=0.115.4
 uvicorn
 sentencepiece
 protobuf
-pandas
+pandas~=2.2.3
+konlpy~=0.6.0
+sympy~=1.13.3
+transformers~=4.45.2
+sentence-transformers~=3.2.0
