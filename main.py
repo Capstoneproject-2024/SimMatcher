@@ -41,8 +41,8 @@ while True:
     print("0: Exit\n"
           "1: Match\n"
           "2: Set Review Proportion (0~100)\n"
-          "3: Change file\n"
-          "4: Extractor\n"
+          "3: Change file (x)\n"
+          "4: Extractor (x)\n"
           "5: Print all keywords\n"
           "6: Extract and save as csv"
           )
