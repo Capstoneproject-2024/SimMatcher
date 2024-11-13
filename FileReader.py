@@ -36,6 +36,13 @@ class Filereader:
         return books
 
     def readReviewFromCSV(self, csvpath: str, encoding='utf-8'):
+        """
+        Review for same book will be returned in different row.
+        [t1, r1], [t1, r2]
+        :param csvpath: Path of csv file
+        :param encoding: encoding type of csv file
+        :return: List of review keyword in [ [title, keywords], [title, keywords] ]
+        """
         reviews_processed = []
         dataframe = pd.read_csv(csvpath, encoding=encoding)
 

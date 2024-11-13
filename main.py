@@ -27,9 +27,11 @@ books = reader.readBooks(book_path)
 
 print("Program Start")
 
+use_model = False
 using_matcher = input("Will load Word2Vec model of SimMatcher? (Y to use) >>")
 if using_matcher in ['y', 'Y']:
     print("main.py: Matcher loading")
+    use_model = True
     matcher = Matcher()
     print("main.py: Matcher ready - with W2V model")
 else:
@@ -56,7 +58,7 @@ while True:
             extractor.save_status_to_exit()
             exit(0)
 
-        elif user_input == '1' and matcher is not None:
+        elif user_input == '1' and use_model:
             matcher.match_both_test()
 
         elif user_input == '2':
