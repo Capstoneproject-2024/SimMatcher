@@ -14,7 +14,8 @@ class Matcher:
         self.review_proportion = 0.5    # Proportion of Review
         self.time_format = "%y%m%d-%H%M%S"
 
-        self.keywords = {}              # {book_title: {info: [], review: []}} Caching the keywords for testing
+        self.keywords = {}              # { book_title: {info: [], review: []}} Caching the keywords for testing
+        self.keywords_categorized = {}  # { Keyword_category: [book1, book2, ...], Keyword_category: [...] }
 
         self.set_keywords()
         print("SimMatcher.py: sim_matcher ready")
@@ -57,11 +58,13 @@ class Matcher:
             self._add_keyword(book[0].lower(), book[1], Keytype.INFO)       # [0] = title, [1] = info
 
         for review in self.reviews:
+
             self._add_keyword(review[0].lower(), review[1], Keytype.REVIEW)  # [0] = title, [1] = review
 
         print("SimilarityMatcher.py: Keywords set")
 
     def _add_keyword(self, title: str, keywords: list, key_type: int):
+        # TODO 현재 한 책에 대한 복수개의 리뷰 처리가 안되어있음
         if title not in self.keywords:
             self.keywords[title] = {Keytype.INFO.name: [], Keytype.REVIEW.name: []}
 
@@ -160,7 +163,7 @@ class Matcher:
         # 각 책에 대한 loop
         for title, keywords in self.keywords.items():
             info_keywords = keywords[Keytype.INFO.name]
-            review_keywords = keywords[Keytype.REVIEW.name]
+            review_keywords = keywords[Keytype.REVIEW.name]     # Could be a multiple list
             sims_info = []
             sims_review = []
 
@@ -189,10 +192,10 @@ class Matcher:
                 elif len(sims_review) != 0:
                     similarity = sum(sims_review) / len(sims_review)
 
-                else:
-                    print(f"WARNING: Empty Dataset\n"
-                          f"    input title:{title_in}, keywords:{keywords_in}"
-                          f"    current  title: {title}")
+                #else:
+                    #print(f"WARNING: Empty Dataset\n"
+                     #     f"    input title:{title_in}, keywords:{keywords_in}"
+                      #    f"    current  title: {title}")
 
             book_similarity.append([title, similarity])
 
@@ -209,6 +212,7 @@ class Matcher:
         :param keywords: [keyword1, keyword2, ... ]
         :return:
         """
+        # TODO 복수개의 Review 처리 안되어있음
         r_proportion = self.review_proportion
         i_proportion = 1 - self.review_proportion
         book_similarity = []
@@ -266,6 +270,7 @@ class Matcher:
             review_sample = self.reviews[review_num]
             print(f'Sample review: {review_sample}')
 
+            # TODO 복수개의 리뷰 처리 안되어있음
             for title, keywords in self.keywords.items():
                 info_keywords = keywords[Keytype.INFO.name]
                 review_keywords = keywords[Keytype.REVIEW.name]
@@ -367,6 +372,7 @@ class Matcher:
         processed_data = []
         columns = ['title'] + [f'keyword{i}' for i in range(1, 6)]
 
+        # TODO 복수개의 리뷰 처리 안되어있음
         for title, keywords in self.keywords.items():
             info_keyword = (keywords[Keytype.INFO.name] + [''] * 5)[:5]
             review_keyword = (keywords[Keytype.REVIEW.name] + [''] * 5)[:5]

@@ -27,11 +27,13 @@ books = reader.readBooks(book_path)
 
 print("Program Start")
 
-using_matcher = input("Will you use matcher and extractor? (Y to use) >>")
+using_matcher = input("Will load Word2Vec model of SimMatcher? (Y to use) >>")
 if using_matcher in ['y', 'Y']:
+    print("main.py: Matcher loading")
     matcher = Matcher()
     print("main.py: Matcher ready - with W2V model")
 else:
+    print("main.py: Matcher loading")
     matcher = Matcher(use_model=False)
     print("main.py: Matcher ready - NO W2V model")
 extractor = Extractor()
@@ -64,7 +66,7 @@ while True:
         elif user_input == '3':
             print("test matcher, and save")
             book_key_path = input("Type book keyword path ( 'Y' to use default ) >>")
-            review_key_path = input("Type book Keyword path ( 'Y' to use default ) >>")
+            review_key_path = input("Type review Keyword path ( 'Y' to use default ) >>")
             test_key_path = input("Type TEST keyword path ( 'Y' to use default ) >>")
 
             review_file = Path(review_key_path)
@@ -87,8 +89,6 @@ while True:
 
             matcher.set_keywords(book_keyword_path=book_key_path, review_keyword_path=review_key_path)
             matcher.test_and_save_as_csv(test_key_path)
-
-
 
         elif user_input == '4':
             print("Testing novel brand new keyword extracting LMFOOOOOO (but not yet)")
