@@ -136,6 +136,7 @@ class Matcher:
 
     def match_both(self, title: str, keywords: list, recommend_number=3):
         """
+        :param recommend_number: number of book to recommend
         :param title: simple string of title
         :param keywords: [keyword1, keyword2, ... ]
         :return:
