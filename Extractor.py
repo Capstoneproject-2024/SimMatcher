@@ -70,7 +70,7 @@ class Extractor:
         if pos:
             review = self.extract_pos(review)
 
-        stopwords = ['하다', '되다', '있다']
+        stopwords = ['하다', '되다', '있다', '이', '그', '저', '것']
         temp = []
         keywords = self.extractor.extract_keywords(
             review,

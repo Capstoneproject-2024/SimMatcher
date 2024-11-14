@@ -27,9 +27,11 @@ books = reader.readBooks(book_path)
 
 print("Program Start")
 
+use_model = False
 using_matcher = input("Will load Word2Vec model of SimMatcher? (Y to use) >>")
 if using_matcher in ['y', 'Y']:
     print("main.py: Matcher loading")
+    use_model = True
     matcher = Matcher()
     print("main.py: Matcher ready - with W2V model")
 else:
@@ -56,7 +58,7 @@ while True:
             extractor.save_status_to_exit()
             exit(0)
 
-        elif user_input == '1' and matcher is not None:
+        elif user_input == '1' and use_model:
             matcher.match_both_test()
 
         elif user_input == '2':
@@ -87,8 +89,16 @@ while True:
                   f'Review keyword path: "{review_key_path}"\n'
                   f'Compare and test with: "{test_key_path}"\n')
 
+            # Set proportion
+            proportion = input(f'Type the proportion of review (0~100) >>')
+            matcher.set_proportion(int(proportion))
+
+            # Work
             matcher.set_keywords(book_keyword_path=book_key_path, review_keyword_path=review_key_path)
             matcher.test_and_save_as_csv(test_key_path)
+
+            # initialize proportion
+            matcher.set_proportion(50)
 
         elif user_input == '4':
             print("Testing novel brand new keyword extracting LMFOOOOOO (but not yet)")

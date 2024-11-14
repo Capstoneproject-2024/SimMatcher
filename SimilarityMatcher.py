@@ -9,7 +9,7 @@ class Matcher:
         self.books = []
         self.reviews = []
         if use_model:
-            self.model = fasttext.load_facebook_vectors('models/cc.ko.300.bin.gz')
+            self.model = fasttext.load_facebook_vectors(modelpath)
         self.reader = Filereader()
         self.review_proportion = 0.5    # Proportion of Review
         self.time_format = "%y%m%d-%H%M%S"
@@ -51,25 +51,24 @@ class Matcher:
         self.getBooks(book_path=book_keyword_path)
 
         # Change for select review file { Json / CSV }
-        #self.getReviews_json(review_path=review_keyword_path)
+        # self.getReviews_json(review_path=review_keyword_path)
         self.getReviews_csv(review_path=review_keyword_path)
 
         for book in self.books:
             self._add_keyword(book[0].lower(), book[1], Keytype.INFO)       # [0] = title, [1] = info
 
         for review in self.reviews:
-
-            self._add_keyword(review[0].lower(), review[1], Keytype.REVIEW)  # [0] = title, [1] = review
+            self._add_keyword(review[0].lower(), review[1], Keytype.REVIEW)  # [0] = title, [1] = review keywords
 
         print("SimilarityMatcher.py: Keywords set")
 
     def _add_keyword(self, title: str, keywords: list, key_type: int):
-        # TODO 현재 한 책에 대한 복수개의 리뷰 처리가 안되어있음
+        # TODO 현재 한 책에 대한 복수개의 리뷰 처리가 안되어있음 -> 처리 완
         if title not in self.keywords:
             self.keywords[title] = {Keytype.INFO.name: [], Keytype.REVIEW.name: []}
 
-        if key_type == Keytype.REVIEW:
-            self.keywords[title][Keytype.REVIEW.name] = keywords
+        if key_type == Keytype.REVIEW and keywords not in self.keywords[title][Keytype.REVIEW.name]:
+            self.keywords[title][Keytype.REVIEW.name].append(keywords)
 
         elif key_type == Keytype.INFO:
             self.keywords[title][Keytype.INFO.name] = keywords
@@ -153,19 +152,26 @@ class Matcher:
         """
         :param title_in: title of book
         :param keywords_in: keywords list of book
-        :param recommend_number: number of return recommendation
+        :param recommend_number: number of return recommendationS
         :return:
         """
         r_proportion = self.review_proportion
         i_proportion = 1 - self.review_proportion
         book_similarity = []
 
+        # Empty Input
+        if len(keywords_in) <= 0: return book_similarity
+
         # 각 책에 대한 loop
         for title, keywords in self.keywords.items():
+            #print(f'Title in: {title_in}\n'
+            #      f'Keyword in: {keywords_in}\n'
+            #      f'Compare with {title}\n'
+            #      f'keyword: {keywords}')
             info_keywords = keywords[Keytype.INFO.name]
             review_keywords = keywords[Keytype.REVIEW.name]     # Could be a multiple list
             sims_info = []
-            sims_review = []
+            sims_review = []    # 2 Dimensional List  CAUTION !!!
 
             # Calculate similarity: with book information
             for info_keyword in info_keywords:
@@ -173,25 +179,57 @@ class Matcher:
                     sims_info.append(self.sentence_similarity(keyword_in, info_keyword))
 
             # Calculate similarity: with reviews
-            for review_keyword in review_keywords:
-                for keyword_in in keywords_in:
-                    sims_review.append(self.sentence_similarity(keyword_in, review_keyword))
+            for review_keyword_list in review_keywords:
+                for review_keyword in review_keyword_list:
+                    temp_sims_review = []
+                    for keyword_in in keywords_in:
+                        temp_sims_review.append(self.sentence_similarity(keyword_in, review_keyword))
+                    sims_review.append(temp_sims_review)
 
             similarity = 0
 
             # Calculate average similarity for each book
             if len(sims_info) != 0 and len(sims_review) != 0:
+
+                # Calculate info similarity (simply use avg)
                 info_sim_avg = sum(sims_info) / len(sims_info)
-                review_sim_avg = sum(sims_review) / len(sims_review)
+
+                # Calculate review similarity (simpley use avg + sorting) -> List
+                review_sim_list = []
+                for review_sim in sims_review:
+                    avg_similarity = sum(review_sim) / len(review_sim)
+                    review_sim_list.append(avg_similarity)
+
+                    # Choose / Calculate total review similarity
+                review_sim_list.sort(reverse=True) # 내림차순 정렬 ->가장 높은 유사도 활용하기 위함. 바꿀 수 있다.
+                review_sim_avg = review_sim_list[0]
+
+                # Total Similarity
                 similarity = (r_proportion * review_sim_avg) + (i_proportion * info_sim_avg)
 
+            # TODO - we can just ignore when there is no review, but now I choose to use half
             # When there is no review/info
             else:
+                # To make review list without empty review
+                review_except_empty = [review_sim for review_sim in sims_review if len(review_sim) != 0]
+
+                # There is no review
                 if len(sims_info) != 0:
                     similarity = sum(sims_info) / len(sims_info)
-                elif len(sims_review) != 0:
-                    similarity = sum(sims_review) / len(sims_review)
 
+                # There is no info
+                elif len(sims_review) != 0:
+                    # Calculate review similarity (simpley use avg + sorting) -> List
+                    review_sim_list = []
+                    for review_sim in review_except_empty:
+                        avg_similarity = sum(review_sim) / len(review_sim)
+                        review_sim_list.append(avg_similarity)
+
+                    # Choose / Calculate total review similarity
+                    review_sim_list.sort(reverse=True)  # 내림차순 정렬 ->가장 높은 유사도 활용하기 위함. 바꿀 수 있다.
+                    similarity = review_sim_list[0]
+
+                # In case that there is no info and review (Only name of book)
                 #else:
                     #print(f"WARNING: Empty Dataset\n"
                      #     f"    input title:{title_in}, keywords:{keywords_in}"
@@ -266,46 +304,12 @@ class Matcher:
         review_num = int(input('\nEnter review number: '))
 
         while 0 <= review_num <= len(self.reviews):
-            book_similarity = []
             review_sample = self.reviews[review_num]
             print(f'Sample review: {review_sample}')
 
             # TODO 복수개의 리뷰 처리 안되어있음
-            for title, keywords in self.keywords.items():
-                info_keywords = keywords[Keytype.INFO.name]
-                review_keywords = keywords[Keytype.REVIEW.name]
-                sims_info = []
-                sims_review = []
-
-                # Calculate similarity: with book information
-                for keyword in info_keywords:
-                    for review in review_sample[1]:
-                        sims_info.append(self.sentence_similarity(review, keyword))
-
-                # Calculate similarity: with reviews
-                for keyword in review_keywords:
-                    for review in review_sample[1]:
-                        sims_review.append(self.sentence_similarity(review, keyword))
-
-                similarity = 0
-
-                # Calculate average similarity for each book
-                if len(sims_info) != 0 and len(sims_review) != 0:
-                    info_sim_avg = sum(sims_info) / len(sims_info)
-                    review_sim_avg = sum(sims_review) / len(sims_review)
-                    similarity = (r_proportion * review_sim_avg) + (i_proportion * info_sim_avg)
-
-                # When there is no review/info
-                else:
-                    if len(sims_info) != 0:
-                        similarity = sum(sims_info) / len(sims_info)
-                    elif len(sims_review) != 0:
-                        similarity = sum(sims_review) / len(sims_review)
-
-                book_similarity.append([title, similarity])
-
-            book_similarity.sort(key=lambda x: x[1], reverse=True)
-            print(book_similarity[:4] + book_similarity[-3:])
+            recommend = self.match_both(review_sample[0], review_sample[1])
+            print(f'Recommendation: {recommend}')
             review_num = int(input('\nEnter review number: '))
 
     def match_book2review(self, reviews, books):
