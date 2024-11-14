@@ -5,6 +5,7 @@ from Extractor import *
 from SimilarityMatcher import *
 
 # Type "uvicorn [file name]:app --reload" to start server
+#   -> ex) "uvicorn api_test:app --reload"
 
 app = FastAPI()
 
