@@ -89,8 +89,16 @@ while True:
                   f'Review keyword path: "{review_key_path}"\n'
                   f'Compare and test with: "{test_key_path}"\n')
 
+            # Set proportion
+            proportion = input(f'Type the proportion of review (0~100) >>')
+            matcher.set_proportion(int(proportion))
+
+            # Work
             matcher.set_keywords(book_keyword_path=book_key_path, review_keyword_path=review_key_path)
             matcher.test_and_save_as_csv(test_key_path)
+
+            # initialize proportion
+            matcher.set_proportion(50)
 
         elif user_input == '4':
             print("Testing novel brand new keyword extracting LMFOOOOOO (but not yet)")
