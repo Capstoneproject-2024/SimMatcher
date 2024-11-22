@@ -1,5 +1,5 @@
 from urllib.parse import urlencode
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from Extractor import *
@@ -25,6 +25,10 @@ def makeURLRequest(query : str):
     # DB SQL request
     encoded_query = urlencode({"query": query})
     return f"https://rahanaman.cien.or.kr/execute_query?{encoded_query}"
+
+def checkDBFailure(response: dict):
+    if response["result"] == "fail":
+        raise HTTPException(status_code=502, detail="DB result is fail")
 
 @app.post("/submit")
 # For testing
@@ -63,11 +67,4 @@ async def extract_keyword(request: Request):
 # 처음에는 Get을 고려했으나 Post가 더 나아보임 (리뷰는 길기 때문에)
 
 
-@app.get("/extractg")
-async def extract_keyword(review: str):
-    #keywords = review.split(' ')
-    keywords = extractor.extract_keyword_string(review)
-    #print(f"Received review: {review}")
-    #print(f"Extracted Keywords: {keywords}")
-    return {"keywords": keywords}
 
