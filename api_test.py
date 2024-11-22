@@ -1,3 +1,4 @@
+from urllib.parse import urlencode
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import json
@@ -19,6 +20,11 @@ app.add_middleware(
 
 extractor = Extractor()
 matcher = Matcher()
+
+def makeURLRequest(query : str):
+    # DB SQL request
+    encoded_query = urlencode({"query": query})
+    return f"https://rahanaman.cien.or.kr/execute_query?{encoded_query}"
 
 @app.post("/submit")
 # For testing
